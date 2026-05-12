@@ -319,8 +319,8 @@
         <p class="auth-sub">Sign in with your mobile number</p>
         <div class="auth-field">
           <label>Mobile number</label>
-          <div class="phone-row">
-            <select id="auth-cc" class="cc-select">
+          <div style="display:flex;gap:8px;width:100%;box-sizing:border-box;">
+            <select id="auth-cc" style="width:115px;min-width:115px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px;padding:11px 6px;">
               <option value="+91">🇮🇳 +91</option>
               <option value="+1">🇺🇸 +1</option>
               <option value="+44">🇬🇧 +44</option>
@@ -341,7 +341,8 @@
               <option value="+7">🇷🇺 +7</option>
               <option value="+20">🇪🇬 +20</option>
             </select>
-            <input type="tel" id="auth-phone" placeholder="9876543210" class="phone-input"
+            <input type="text" id="auth-phone" placeholder="9876543210"
+              style="flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;padding:11px 14px;box-sizing:border-box;"
               onkeydown="if(event.key==='Enter') sendOTP()"/>
           </div>
         </div>
