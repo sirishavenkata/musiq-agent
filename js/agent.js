@@ -128,75 +128,22 @@ Each object must have exactly these keys:
 }`;
 }
 
-// ─── API CALL (Google Gemini) ────────────────────────────────
+// ─── API CALL ────────────────────────────────────────────────
 async function callAgent(prompt) {
-  // Always try the server proxy first (/api/chat)
-  // This works on Vercel production — the GEMINI_API_KEY is stored server-side
-  try {
-    const proxyResp = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
-    });
-
-    if (proxyResp.ok) {
-      const data = await proxyResp.json();
-      return data;
-    }
-
-    // Proxy returned an error — get the message
-    const proxyErr = await proxyResp.json().catch(() => ({}));
-
-    // 404 or 405 means no server (local dev without vercel dev)
-    // Fall through to direct Gemini call
-    if (proxyResp.status === 404 || proxyResp.status === 405) {
-      console.log('[agent] Proxy not available, trying direct Gemini call');
-    } else {
-      // Real server error — throw it
-      throw new Error(proxyErr.error || `Server error ${proxyResp.status}`);
-    }
-  } catch (fetchErr) {
-    // Only continue to fallback if it is a network error (no server running)
-    const isNetworkError = fetchErr.message && (
-      fetchErr.message.includes('Failed to fetch') ||
-      fetchErr.message.includes('NetworkError') ||
-      fetchErr.message.includes('fetch')
-    );
-    if (!isNetworkError) throw fetchErr;
-    console.log('[agent] Network error reaching proxy, trying direct call');
-  }
-
-  // Fallback: direct Gemini call (local dev only)
-  // Uses API key saved in Settings
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error(
-      'No server proxy found and no API key configured.\n' +
-      'For deployed app: Add GEMINI_API_KEY in Vercel → Project Settings → Environment Variables.\n' +
-      'For local testing: Open Settings (sidebar) and paste your Google Gemini API key.'
-    );
-  }
-
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-  const resp = await fetch(GEMINI_URL, {
+  console.log('[agent] Calling /api/chat proxy...');
+  const proxyResp = await fetch('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-      },
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
   });
-
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini API error ${resp.status}`);
+  console.log('[agent] Proxy response status:', proxyResp.status);
+  if (proxyResp.ok) {
+    const data = await proxyResp.json();
+    console.log('[agent] Proxy success');
+    return data;
   }
-
-  const d = await resp.json();
-  return { text: d?.candidates?.[0]?.content?.parts?.[0]?.text || '' };
+  const errData = await proxyResp.json().catch(() => ({}));
+  throw new Error(errData.error || `Proxy error ${proxyResp.status}`);
 }
 
 // ─── FETCH SONGS ──────────────────────────────────────────────
