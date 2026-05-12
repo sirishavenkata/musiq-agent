@@ -7,12 +7,12 @@
 // Replace these values with your own Firebase project config
 // Get from: Firebase Console → Project Settings → Your apps → Web app
 const FIREBASE_CONFIG = {
-  apiKey:            window.ENV_FIREBASE_API_KEY            || 'YOUR_FIREBASE_API_KEY',
-  authDomain:        window.ENV_FIREBASE_AUTH_DOMAIN        || 'YOUR_PROJECT.firebaseapp.com',
-  projectId:         window.ENV_FIREBASE_PROJECT_ID         || 'YOUR_PROJECT_ID',
-  storageBucket:     window.ENV_FIREBASE_STORAGE_BUCKET     || 'YOUR_PROJECT.appspot.com',
-  messagingSenderId: window.ENV_FIREBASE_MESSAGING_SENDER_ID|| 'YOUR_SENDER_ID',
-  appId:             window.ENV_FIREBASE_APP_ID             || 'YOUR_APP_ID',
+  apiKey:            'AIzaSyB6-ewxa3XefH8JZw3chfxALdpbnJIVto4',
+  authDomain:        'musiq-agent.firebaseapp.com',
+  projectId:         'musiq-agent',
+  storageBucket:     'musiq-agent.firebasestorage.app',
+  messagingSenderId: '887656964593',
+  appId:             '1:887656964593:web:a69338c02ec6b7a60be450',
 };
 
 // ─── CONSTANTS ────────────────────────────────────────────────
@@ -510,6 +510,23 @@ function escHTML(str) {
 // ─── BOOT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   setupOtpInput();
+
+  // Check if Firebase is configured with real values
+  const isFirebaseConfigured = (
+    FIREBASE_CONFIG.apiKey !== 'YOUR_FIREBASE_API_KEY' &&
+    FIREBASE_CONFIG.apiKey !== '' &&
+    !FIREBASE_CONFIG.apiKey.includes('YOUR_')
+  );
+
+  if (!isFirebaseConfigured) {
+    // Firebase not set up yet — skip login, go straight to app
+    console.warn('[Auth] Firebase not configured — bypassing login for now.');
+    console.warn('[Auth] Follow README Step 2 to set up Firebase.');
+    hideAuthOverlay();
+    showToast('Firebase not set up — running without login. See README Step 2.');
+    return;
+  }
+
   await initFirebase();
   // onAuthStateChanged fires automatically after initFirebase
 });

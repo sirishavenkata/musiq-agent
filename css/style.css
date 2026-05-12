@@ -1285,9 +1285,22 @@ select:focus {
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.phone-row { display: flex; gap: 8px; }
-.cc-select { width: 110px; flex-shrink: 0; }
-.phone-input { flex: 1; }
+.phone-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.cc-select {
+  width: 120px;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+.phone-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100% !important;
+  display: block !important;
+}
 
 .auth-btn {
   width: 100%; padding: 13px;
