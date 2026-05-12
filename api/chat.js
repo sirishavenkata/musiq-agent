@@ -32,8 +32,8 @@ export default async function handler(req, res) {
   if (!prompt) return res.status(400).json({ error: 'prompt is required' });
 
   // ── Call Gemini 1.5 Flash ─────────────────────────────────
-  // Model: gemini-1.5-flash-8b — free tier, 1500 req/day, fast & accurate
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-8b:generateContent?key=${apiKey}`;
+  // Model: gemini-2.5-flash — free tier, 1500 req/day, fast & accurate
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   try {
     const geminiResp = await fetch(GEMINI_URL, {
