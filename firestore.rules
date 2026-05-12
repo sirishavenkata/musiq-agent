@@ -1,0 +1,28 @@
+// firestore.rules
+// Deploy with: firebase deploy --only firestore:rules
+// Or paste into Firebase Console → Firestore → Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Users collection ──────────────────────────────────────
+    // Each user can only read and write their OWN profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── Usage collection ──────────────────────────────────────
+    // Document ID format: {uid}_{date}  e.g. "abc123_2026-05-12"
+    // Users can only read/write their own usage docs
+    match /usage/{docId} {
+      allow read, write: if request.auth != null
+        && docId.matches(request.auth.uid + '_.*');
+    }
+
+    // ── Block everything else ─────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

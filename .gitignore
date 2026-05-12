@@ -1,0 +1,10 @@
+# Environment — NEVER commit your real API key
+.env
+.env.local
+.env.production
+
+# Vercel
+.vercel
+
+# Node (only needed if you run vercel dev locally)
+node_modules/

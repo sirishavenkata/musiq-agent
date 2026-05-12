@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Musiq — AI Music Agent</title>
+
+  <!-- ── PWA Meta Tags ── -->
+  <meta name="application-name" content="Musiq"/>
+  <meta name="description" content="AI-powered music discovery — every genre, language, era from 1980 to today."/>
+  <meta name="theme-color" content="#6c63ff"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Musiq"/>
+  <meta name="msapplication-TileColor" content="#6c63ff"/>
+  <meta name="msapplication-TileImage" content="/icons/icon-144.png"/>
+
+  <!-- ── Open Graph / Social ── -->
+  <meta property="og:type"        content="website"/>
+  <meta property="og:title"       content="Musiq — AI Music Agent"/>
+  <meta property="og:description" content="Discover music from 1980 to today — every genre, language, and era."/>
+  <meta property="og:image"       content="/icons/icon-512.png"/>
+  <meta name="twitter:card"       content="summary"/>
+
+  <!-- ── PWA Icons ── -->
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon"             type="image/png" sizes="32x32"  href="/icons/icon-96.png"/>
+  <link rel="icon"             type="image/png" sizes="16x16"  href="/icons/icon-72.png"/>
+  <link rel="apple-touch-icon" sizes="152x152"                 href="/icons/icon-152.png"/>
+  <link rel="apple-touch-icon" sizes="192x192"                 href="/icons/icon-192.png"/>
+
+  <!-- ── Fonts & Icons ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon"><i class="fa-solid fa-waveform-lines"></i></span>
+      <span class="logo-text">Musiq</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="home" onclick="showView('home',this)">
+        <i class="fa-solid fa-house"></i><span>Home</span>
+      </a>
+      <a href="#" class="nav-item" data-view="search" onclick="showView('search',this)">
+        <i class="fa-solid fa-magnifying-glass"></i><span>Discover</span>
+      </a>
+      <a href="#" class="nav-item" data-view="library" onclick="showView('library',this)">
+        <i class="fa-solid fa-heart"></i><span>Favourites</span>
+      </a>
+      <a href="#" class="nav-item" data-view="charts" onclick="showView('charts',this)">
+        <i class="fa-solid fa-chart-simple"></i><span>Analytics</span>
+      </a>
+      <a href="#" class="nav-item" data-view="profile" onclick="showView('profile',this);renderProfileView()">
+        <i class="fa-solid fa-circle-user"></i><span>Profile</span>
+      </a>
+    </nav>
+    <div class="sidebar-section-label">GENRES</div>
+    <div class="sidebar-genres" id="sidebar-genres">
+      <button class="genre-pill" onclick="quickGenre('Pop')">Pop</button>
+      <button class="genre-pill" onclick="quickGenre('Hip-Hop / Rap')">Hip-Hop</button>
+      <button class="genre-pill" onclick="quickGenre('Electronic / EDM')">EDM</button>
+      <button class="genre-pill" onclick="quickGenre('R&B / Soul')">R&B</button>
+      <button class="genre-pill" onclick="quickGenre('Rock')">Rock</button>
+      <button class="genre-pill" onclick="quickGenre('Jazz')">Jazz</button>
+      <button class="genre-pill" onclick="quickGenre('K-Pop')">K-Pop</button>
+      <button class="genre-pill" onclick="quickGenre('Bollywood / Filmi')">Bollywood</button>
+      <button class="genre-pill" onclick="quickGenre('Latin / Reggaeton')">Latin</button>
+      <button class="genre-pill" onclick="quickGenre('Afrobeats')">Afrobeats</button>
+      <button class="genre-pill" onclick="quickGenre('Country')">Country</button>
+      <button class="genre-pill" onclick="quickGenre('Classical')">Classical</button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile-wrap" id="sidebar-profile"></div>
+      <button class="btn-settings" onclick="showSettings()"><i class="fa-solid fa-gear"></i> Settings</button>
+    </div>
+  </aside>
+
+  <!-- Mobile header -->
+  <header class="mobile-header">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <span class="mobile-logo">Musiq</span>
+    <button class="mobile-search-btn" onclick="showView('search', document.querySelector('[data-view=search]'))"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- HOME VIEW -->
+    <div class="view active" id="view-home">
+      <div class="home-hero">
+        <div class="hero-orb orb1"></div>
+        <div class="hero-orb orb2"></div>
+        <div class="hero-orb orb3"></div>
+        <div class="hero-inner">
+          <p class="hero-eyebrow">AI-POWERED · 1980 TO TODAY</p>
+          <h1 class="hero-title">Every song.<br/>Every language.<br/>Every era.</h1>
+          <p class="hero-sub">Ask our agent anything about music — genre, mood, language, decade. It pulls real data with Spotify links and MusicBrainz verification.</p>
+          <button class="btn-hero" onclick="showView('search', document.querySelector('[data-view=search]'))">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Start discovering
+          </button>
+        </div>
+      </div>
+
+      <section class="home-section">
+        <h2 class="section-title">Quick picks</h2>
+        <div class="quick-grid">
+          <button class="qcard" onclick="autoSearch('Hip-Hop / Rap','English','1990s','')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#ff6b35,#f7931e)"><i class="fa-solid fa-microphone"></i></div>
+            <div class="qcard-label">90s Hip-Hop</div>
+            <div class="qcard-sub">English · 1990s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('K-Pop','Korean','2010s','')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fa-solid fa-star"></i></div>
+            <div class="qcard-label">K-Pop Wave</div>
+            <div class="qcard-sub">Korean · 2010s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Bollywood / Filmi','Hindi','','Romantic')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#ff9a9e,#fecfef)"><i class="fa-solid fa-heart"></i></div>
+            <div class="qcard-label">Bollywood Love</div>
+            <div class="qcard-sub">Hindi · Romantic</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Electronic / EDM','English','2000s','Upbeat / Energetic')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fa-solid fa-bolt"></i></div>
+            <div class="qcard-label">EDM Anthems</div>
+            <div class="qcard-sub">Electronic · 2000s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Latin / Reggaeton','Spanish','2020s','')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fa-solid fa-fire"></i></div>
+            <div class="qcard-label">Reggaeton Heat</div>
+            <div class="qcard-sub">Spanish · 2020s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Afrobeats','','2010s','Upbeat / Energetic')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#fa709a,#fee140)"><i class="fa-solid fa-drum"></i></div>
+            <div class="qcard-label">Afrobeats Vibes</div>
+            <div class="qcard-sub">Africa · 2010s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Jazz','','1980s','Chill / Relaxed')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"><i class="fa-solid fa-music"></i></div>
+            <div class="qcard-label">Jazz Chill</div>
+            <div class="qcard-sub">Jazz · 1980s</div>
+          </button>
+          <button class="qcard" onclick="autoSearch('Rock','English','1980s','Rebellious')">
+            <div class="qcard-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fa-solid fa-guitar"></i></div>
+            <div class="qcard-label">80s Rock</div>
+            <div class="qcard-sub">Rock · 1980s</div>
+          </button>
+        </div>
+      </section>
+
+      <section class="home-section" id="recent-section" style="display:none;">
+        <h2 class="section-title">Recent results</h2>
+        <div class="song-list" id="recent-list"></div>
+      </section>
+    </div>
+
+    <!-- SEARCH / DISCOVER VIEW -->
+    <div class="view" id="view-search">
+      <div class="search-header">
+        <h1 class="view-title">Discover music</h1>
+        <p class="view-sub">Filter by genre, language, era, mood — powered by AI</p>
+      </div>
+      <div class="search-panel">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label>Genre</label>
+            <select id="f-genre">
+              <option value="">All genres</option>
+              <option>Pop</option><option>Rock</option><option>Hip-Hop / Rap</option>
+              <option>R&B / Soul</option><option>Electronic / EDM</option><option>Jazz</option>
+              <option>Classical</option><option>Country</option><option>Reggae / Dancehall</option>
+              <option>Latin / Reggaeton</option><option>Bollywood / Filmi</option><option>K-Pop</option>
+              <option>Afrobeats</option><option>Metal</option><option>Folk / Acoustic</option>
+              <option>Gospel</option><option>Qawwali</option><option>Carnatic</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Language</label>
+            <select id="f-language">
+              <option value="">All languages</option>
+              <option>English</option><option>Spanish</option><option>Hindi</option>
+              <option>French</option><option>Korean</option><option>Portuguese</option>
+              <option>Arabic</option><option>Japanese</option><option>Punjabi</option>
+              <option>Tamil</option><option>Telugu</option><option>Swahili</option>
+              <option>Mandarin</option><option>Urdu</option><option>Bengali</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Era</label>
+            <select id="f-era">
+              <option value="">Any era</option>
+              <option>1980s</option><option>1990s</option><option>2000s</option>
+              <option>2010s</option><option>2020s</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Mood</label>
+            <select id="f-mood">
+              <option value="">Any mood</option>
+              <option>Upbeat / Energetic</option><option>Melancholic / Sad</option>
+              <option>Romantic</option><option>Rebellious</option>
+              <option>Chill / Relaxed</option><option>Motivational</option>
+              <option>Devotional / Spiritual</option><option>Party / Dance</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Country of Origin</label>
+            <select id="f-country">
+              <option value="">Any country</option>
+              <option>USA</option><option>UK</option><option>India</option>
+              <option>South Korea</option><option>Nigeria</option><option>Brazil</option>
+              <option>Jamaica</option><option>Colombia</option><option>France</option>
+              <option>Japan</option><option>South Africa</option><option>Mexico</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Results</label>
+            <select id="f-count">
+              <option value="5">5 songs</option>
+              <option value="10" selected>10 songs</option>
+              <option value="20">20 songs</option>
+            </select>
+          </div>
+        </div>
+        <div class="custom-search-row">
+          <div class="custom-input-wrap">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <input type="text" id="f-custom" placeholder='Ask anything… e.g. "sad breakup songs by female artists in the 2010s"'/>
+          </div>
+        </div>
+        <div class="search-actions">
+          <button class="btn-search" id="btn-search" onclick="fetchSongs()">
+            <i class="fa-solid fa-magnifying-glass"></i> Search songs
+          </button>
+          <button class="btn-surprise" onclick="randomDiscover()">
+            <i class="fa-solid fa-shuffle"></i> Surprise me
+          </button>
+          <button class="btn-export" id="btn-export" onclick="exportCSV()" style="display:none;">
+            <i class="fa-solid fa-download"></i> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading-state" id="loading-state" style="display:none;">
+        <div class="loading-bars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="loading-text" id="loading-text">Querying music agent…</p>
+      </div>
+
+      <!-- Status -->
+      <div class="results-status" id="results-status" style="display:none;"></div>
+
+      <!-- Results -->
+      <div class="song-list" id="search-results"></div>
+    </div>
+
+    <!-- FAVOURITES VIEW -->
+    <div class="view" id="view-library">
+      <div class="search-header">
+        <h1 class="view-title">Favourites</h1>
+        <p class="view-sub">Songs you've saved across all sessions</p>
+      </div>
+      <div class="fav-actions" id="fav-actions" style="display:none;">
+        <button class="btn-export" onclick="exportFavCSV()"><i class="fa-solid fa-download"></i> Export favourites</button>
+        <button class="btn-clear-fav" onclick="clearFavourites()"><i class="fa-solid fa-trash"></i> Clear all</button>
+      </div>
+      <div class="song-list" id="fav-list"></div>
+      <div class="empty-state" id="fav-empty">
+        <i class="fa-regular fa-heart"></i>
+        <p>No favourites yet</p>
+        <span>Hit the heart icon on any song to save it here</span>
+      </div>
+    </div>
+
+    <!-- ANALYTICS VIEW -->
+    <div class="view" id="view-charts">
+      <div class="search-header">
+        <h1 class="view-title">Analytics</h1>
+        <p class="view-sub">Visual breakdown of your last search results</p>
+      </div>
+      <div class="chart-tab-row">
+        <button class="chart-tab active" onclick="setChart('genre',this)">Genre</button>
+        <button class="chart-tab" onclick="setChart('language',this)">Language</button>
+        <button class="chart-tab" onclick="setChart('era',this)">Decade</button>
+        <button class="chart-tab" onclick="setChart('mood',this)">Mood</button>
+        <button class="chart-tab" onclick="setChart('country',this)">Country</button>
+        <button class="chart-tab" onclick="setChart('bpm',this)">BPM</button>
+      </div>
+      <div class="chart-container" id="chart-container">
+        <div class="empty-state">
+          <i class="fa-solid fa-chart-simple"></i>
+          <p>No data yet</p>
+          <span>Run a search first, then come back here</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div class="view" id="view-profile"></div>
+
+  </main>
+
+  <!-- ══ AUTH OVERLAY ══════════════════════════════════════ -->
+  <div class="auth-overlay" id="auth-overlay">
+
+    <!-- LOGIN SCREEN -->
+    <div class="auth-screen active" id="screen-login">
+      <div class="auth-card">
+        <div class="auth-logo"><i class="fa-solid fa-waveform-lines"></i></div>
+        <h2 class="auth-title">Welcome to Musiq</h2>
+        <p class="auth-sub">Sign in with your mobile number</p>
+        <div class="auth-field">
+          <label>Mobile number</label>
+          <div class="phone-row">
+            <select id="auth-cc" class="cc-select">
+              <option value="+91">🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+61">🇦🇺 +61</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+65">🇸🇬 +65</option>
+              <option value="+60">🇲🇾 +60</option>
+              <option value="+27">🇿🇦 +27</option>
+              <option value="+234">🇳🇬 +234</option>
+              <option value="+254">🇰🇪 +254</option>
+              <option value="+55">🇧🇷 +55</option>
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+33">🇫🇷 +33</option>
+              <option value="+49">🇩🇪 +49</option>
+              <option value="+81">🇯🇵 +81</option>
+              <option value="+82">🇰🇷 +82</option>
+              <option value="+86">🇨🇳 +86</option>
+              <option value="+7">🇷🇺 +7</option>
+              <option value="+20">🇪🇬 +20</option>
+            </select>
+            <input type="tel" id="auth-phone" placeholder="9876543210" class="phone-input"
+              onkeydown="if(event.key==='Enter') sendOTP()"/>
+          </div>
+        </div>
+        <div class="auth-error" id="auth-error-login" style="display:none;"></div>
+        <button class="auth-btn" id="auth-btn-login" onclick="sendOTP()">
+          <span id="auth-btn-label-login" data-default="Send OTP">Send OTP</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <p class="auth-note">We'll send a 6-digit OTP to verify your number. Standard SMS rates may apply.</p>
+        <div id="recaptcha-container"></div>
+      </div>
+    </div>
+
+    <!-- OTP SCREEN -->
+    <div class="auth-screen" id="screen-otp">
+      <div class="auth-card">
+        <button class="auth-back" onclick="showScreen('screen-login')">
+          <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <div class="auth-logo otp-logo"><i class="fa-solid fa-message"></i></div>
+        <h2 class="auth-title">Enter OTP</h2>
+        <p class="auth-sub">Sent to <strong id="otp-phone-display"></strong></p>
+        <div class="otp-boxes">
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+          <input class="otp-digit" type="tel" maxlength="1" inputmode="numeric"/>
+        </div>
+        <input type="hidden" id="otp-input"/>
+        <div class="auth-error" id="auth-error-otp" style="display:none;"></div>
+        <button class="auth-btn" id="auth-btn-otp" onclick="verifyOTP()">
+          <span id="auth-btn-label-otp" data-default="Verify OTP">Verify OTP</span>
+          <i class="fa-solid fa-check"></i>
+        </button>
+        <div class="otp-resend">
+          <span id="otp-timer-label" style="color:var(--text-muted);font-size:13px;"></span>
+          <button id="otp-resend-btn" onclick="resendOTP()" disabled class="resend-btn">Resend OTP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER SCREEN -->
+    <div class="auth-screen" id="screen-register">
+      <div class="auth-card auth-card-wide">
+        <div class="auth-logo"><i class="fa-solid fa-user-plus"></i></div>
+        <h2 class="auth-title">Complete your profile</h2>
+        <p class="auth-sub">Tell us a bit about yourself</p>
+        <div class="register-grid">
+          <div class="auth-field">
+            <label>Full name <span class="req">*</span></label>
+            <input type="text" id="reg-name" placeholder="Your full name"/>
+          </div>
+          <div class="auth-field">
+            <label>Email address <span class="req">*</span></label>
+            <input type="email" id="reg-email" placeholder="you@example.com"/>
+          </div>
+          <div class="auth-field">
+            <label>Date of birth <span class="req">*</span></label>
+            <input type="date" id="reg-dob"/>
+          </div>
+          <div class="auth-field">
+            <label>Country <span class="req">*</span></label>
+            <select id="reg-country">
+              <option value="">Select country</option>
+              <option>India</option><option>United States</option><option>United Kingdom</option>
+              <option>Australia</option><option>Canada</option><option>UAE</option>
+              <option>Singapore</option><option>Malaysia</option><option>Nigeria</option>
+              <option>South Africa</option><option>Kenya</option><option>Brazil</option>
+              <option>Mexico</option><option>France</option><option>Germany</option>
+              <option>Japan</option><option>South Korea</option><option>Pakistan</option>
+              <option>Bangladesh</option><option>Sri Lanka</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="auth-field genre-field">
+          <label>Favourite genres (pick any)</label>
+          <div class="genre-checkboxes">
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Pop"/> Pop</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Hip-Hop"/> Hip-Hop</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="R&B"/> R&B</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Rock"/> Rock</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Electronic"/> Electronic</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Jazz"/> Jazz</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Bollywood"/> Bollywood</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="K-Pop"/> K-Pop</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Afrobeats"/> Afrobeats</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Latin"/> Latin</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Classical"/> Classical</label>
+            <label class="genre-check-item"><input type="checkbox" class="genre-checkbox" value="Country"/> Country</label>
+          </div>
+        </div>
+        <div class="auth-error" id="auth-error-register" style="display:none;"></div>
+        <button class="auth-btn" id="auth-btn-register" onclick="saveProfile()">
+          <span id="auth-btn-label-register" data-default="Create account">Create account</span>
+          <i class="fa-solid fa-rocket"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ DAILY LIMIT MODAL ══════════════════════════════════ -->
+  <div class="modal-overlay" id="limit-modal" onclick="if(event.target===this)closeLimitModal()">
+    <div class="modal limit-modal-inner">
+      <div class="limit-icon"><i class="fa-solid fa-gauge-high"></i></div>
+      <h3>Daily limit reached</h3>
+      <p id="limit-modal-msg">You've used all 600 searches for today. Come back tomorrow!</p>
+      <div class="limit-detail">
+        <i class="fa-solid fa-clock"></i>
+        Your limit resets every day at midnight
+      </div>
+      <button class="auth-btn" onclick="closeLimitModal()" style="margin-top:1.5rem;">
+        Got it
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal" onclick="closeSettings(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="modal-close" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <label>Google Gemini API Key</label>
+          <input type="password" id="api-key-input" placeholder="AIzaSy..." /> />
+          <small>Get your free key at aistudio.google.com — 1500 requests/day, no credit card needed.</small>
+        </div>
+        <div class="setting-row">
+          <label>Default result count</label>
+          <select id="default-count">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        <button class="btn-save-settings" onclick="saveSettings()">Save settings</button>
+        <div class="settings-note">
+          <i class="fa-solid fa-circle-info"></i>
+          Add your free Gemini key above to use the app locally. On Vercel, set GEMINI_API_KEY in environment variables.
+          For standalone deployment, add your key above.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- PWA Install Banner -->
+  <div class="pwa-banner" id="pwa-banner" style="display:none;">
+    <div class="pwa-banner-inner">
+      <div class="pwa-banner-icon"><i class="fa-solid fa-waveform-lines"></i></div>
+      <div class="pwa-banner-text">
+        <strong>Install Musiq</strong>
+        <span>Add to home screen for the best experience</span>
+      </div>
+      <button class="pwa-banner-install" id="pwa-install-btn">Install</button>
+      <button class="pwa-banner-close" onclick="dismissPWABanner()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- Fresh Data Banner (shown after monthly refresh) -->
+  <div class="fresh-banner" id="fresh-banner" style="display:none;">
+    <div class="fresh-banner-inner">
+      <i class="fa-solid fa-circle-check"></i>
+      <span id="fresh-banner-text">Fresh songs for this month are ready!</span>
+      <button onclick="loadFreshSongs()">View now</button>
+      <button class="fresh-close" onclick="document.getElementById('fresh-banner').style.display='none'">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
