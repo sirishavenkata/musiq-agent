@@ -1221,6 +1221,16 @@ select:focus {
   justify-content: center;
   padding: 1rem;
   overflow-y: auto;
+  pointer-events: auto;
+}
+
+.auth-overlay * {
+  pointer-events: auto;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 2001;
 }
 
 .auth-screen { display: none; width: 100%; max-width: 440px; }
