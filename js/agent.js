@@ -130,28 +130,44 @@ Each object must have exactly these keys:
 
 // ─── API CALL (Google Gemini) ────────────────────────────────
 async function callAgent(prompt) {
-  // 1. Try server-side proxy (Vercel deployed + vercel dev)
+  // Always try the server proxy first (/api/chat)
+  // This works on Vercel production — the GEMINI_API_KEY is stored server-side
   try {
-    const proxyResp = await fetch(API_ENDPOINT, {
+    const proxyResp = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     });
 
-    if (proxyResp.ok) return await proxyResp.json();
+    if (proxyResp.ok) {
+      const data = await proxyResp.json();
+      return data;
+    }
 
+    // Proxy returned an error — get the message
     const proxyErr = await proxyResp.json().catch(() => ({}));
-    if (proxyResp.status !== 404) {
+
+    // 404 or 405 means no server (local dev without vercel dev)
+    // Fall through to direct Gemini call
+    if (proxyResp.status === 404 || proxyResp.status === 405) {
+      console.log('[agent] Proxy not available, trying direct Gemini call');
+    } else {
+      // Real server error — throw it
       throw new Error(proxyErr.error || `Server error ${proxyResp.status}`);
     }
-    // 404 = no local server running (file:// open) — fall through
   } catch (fetchErr) {
-    if (!String(fetchErr).includes('fetch') && !String(fetchErr).includes('Failed')) {
-      throw fetchErr;
-    }
+    // Only continue to fallback if it is a network error (no server running)
+    const isNetworkError = fetchErr.message && (
+      fetchErr.message.includes('Failed to fetch') ||
+      fetchErr.message.includes('NetworkError') ||
+      fetchErr.message.includes('fetch')
+    );
+    if (!isNetworkError) throw fetchErr;
+    console.log('[agent] Network error reaching proxy, trying direct call');
   }
 
-  // 2. Fallback: direct Gemini call using key from Settings
+  // Fallback: direct Gemini call (local dev only)
+  // Uses API key saved in Settings
   const apiKey = getApiKey();
   if (!apiKey) {
     throw new Error(
@@ -162,25 +178,24 @@ async function callAgent(prompt) {
   }
 
   const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  const directResp = await fetch(GEMINI_URL, {
+
+  const resp = await fetch(GEMINI_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 8192,
-        responseMimeType: 'application/json',
       },
     }),
   });
 
-  if (!directResp.ok) {
-    const err = await directResp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini API error ${directResp.status}`);
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Gemini API error ${resp.status}`);
   }
 
-  const d = await directResp.json();
+  const d = await resp.json();
   return { text: d?.candidates?.[0]?.content?.parts?.[0]?.text || '' };
 }
 
