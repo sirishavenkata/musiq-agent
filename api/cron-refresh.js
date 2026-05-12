@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 
   console.log(`[cron] Monthly refresh for ${month} ${year}`);
 
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   const geminiCall = async (prompt) => {
     const r = await fetch(GEMINI_URL, {

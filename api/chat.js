@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
   // ── Call Gemini 1.5 Flash ─────────────────────────────────
   // Model: gemini-1.5-flash — free tier, 1500 req/day, fast & accurate
-  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
     const geminiResp = await fetch(GEMINI_URL, {
